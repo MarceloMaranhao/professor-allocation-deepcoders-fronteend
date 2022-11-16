@@ -27,9 +27,12 @@ async function getProfessors(){
             //CREATE A DELETE ALL BUTTON
             const btnDelete = document.createElement('button');
             const spanDelete = document.createElement('span');
+            const iDelete = document.createElement('i');
             const hrLine = document.createElement('hr');
-            btnDelete.setAttribute('class','btnDeleteAll btn btn-danger btn-floating bi bi-trash-fill');
+            btnDelete.setAttribute('class','btnDeleteAll btn btn-danger btn-floating');
             btnDelete.setAttribute('title','Delete All Professors');
+            iDelete.setAttribute('class','fa-solid fa-trash-can');
+            btnDelete.appendChild(iDelete);
             spanDelete.setAttribute('class','px-3 py-2');
             spanDelete.textContent = 'Delete All Professors:';
             btnDelete.addEventListener("click", () => deleteAllRows());
@@ -84,26 +87,21 @@ async function getProfessors(){
 
 async function existsCPFInDatabase(value){
     value = value.replace(/[^\d]+/g,"");
-    const headers = {
-        Accept: 'application/json',
-        "Content-Type": 'application/json',
-        Origin: '',
-        Host: projectURL
-      };
     try {
         const response = await fetch(professorsURL+"/cpf/"+value, {
             method: 'GET',
-            headers: headers,
-          })
-          .then( response => {
-            if (response.status == 200){
-                return true;
-            } else {
-                return false;
+            headers: {
+                Accept: "application/json",
+                "Content-Type": "application/json"
             }
-          });
-        
-    } catch (error){
+          })
+        if (response.status == 200){
+            return true;
+        } else {
+            return false;
+        }
+    }
+    catch (error){
         console.log(error);
         return false;
     }
@@ -264,15 +262,21 @@ function createTableRow({id,name,cpf,department}){
     const actionsColumn = document.createElement('td');
     const btnEdit = document.createElement('button');
     const btnDelete = document.createElement('button');
+    const iEditElement = document.createElement('i');
+    const iDeleteElement = document.createElement('i');
 
-    btnDelete.setAttribute('class','btnDelete btn btn-danger btn-floating bi bi-trash');
+    btnDelete.setAttribute('class','btnDelete btn btn-danger btn-floating me-2');
     btnDelete.setAttribute('title','Delete Professor #'+id);
     btnDelete.addEventListener("click", () => deleteRow(id,name,row));
+    iDeleteElement.setAttribute('class','fa-solid fa-trash');
+    btnDelete.appendChild(iDeleteElement);
 
-    btnEdit.setAttribute('class','btnEdit btn btn-success btn-floating bi bi-pencil-fill');
+    btnEdit.setAttribute('class','btnEdit btn btn-success btn-floating me-2');
     btnEdit.setAttribute('data-bs-toggle','modal');
     btnEdit.setAttribute('data-bs-target','#editProfessorModal');
     btnEdit.setAttribute('title','Edit Professor #'+id);
+    iEditElement.setAttribute('class','fa-regular fa-pen-to-square');
+    btnEdit.appendChild(iEditElement);
     btnEdit.addEventListener('click', () => editRow(id,name,cpf,department));
 
     idColumn.textContent = id;
@@ -355,6 +359,7 @@ function createOption({id,name},element){
 
 $(document).ready(function(){
     btnAddProfessor.addEventListener('click',()=>addNewProfessor());
+    btnAddProfessor.addEventListener("submit", (event) => {event.preventDefault();})
     //btnFindProfessor.addEventListener('click',()=>findProfessorByCPF());
     //btnFindProfessor.setAttribute('onclick','javascript: callFindByCPF();');
 

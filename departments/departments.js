@@ -7,6 +7,7 @@ const divDeleteAllRows = document.getElementById("deleteAllRows");
 let departmentName = "";
 
 btnAddDepartment.addEventListener('click',()=>addNewDepartment());
+btnAddDepartment.addEventListener("submit", (event) => {event.preventDefault();})
 
 async function getDepartments(){
     const response = await fetch(departmentsURL);
@@ -22,9 +23,12 @@ async function getDepartments(){
             //CREATE A DELETE ALL BUTTON
             const btnDelete = document.createElement('button');
             const spanDelete = document.createElement('span');
+            const iDelete = document.createElement('i');
             const hrLine = document.createElement('hr');
-            btnDelete.setAttribute('class','btnDeleteAll btn btn-danger btn-floating bi bi-trash-fill');
+            btnDelete.setAttribute('class','btnDeleteAll btn btn-danger btn-floating');
             btnDelete.setAttribute('title','Delete All Departments');
+            iDelete.setAttribute('class','fa-solid fa-trash-can');
+            btnDelete.appendChild(iDelete);
             spanDelete.setAttribute('class','px-3 py-2');
             spanDelete.textContent = 'Delete All Departments:';
             btnDelete.addEventListener("click", () => deleteAllRows());
@@ -63,7 +67,7 @@ async function addNewDepartment(){
             
             if(response.status == 201){
                 alert('New Department created');
-                //window.location.reload();
+                window.location.reload();
             } else {
                 alert('Try again!');
             }
@@ -76,11 +80,13 @@ async function deleteRow(id,name,row){
     const message = confirm('Do you really want to delete the department: "'+name+'"?');
     if(message){
         const response = await fetch(departmentsURL+"/"+id, {method:"DELETE"});
-        if (response.status == 200){
+        if (response.status == 204){
             tableBody.removeChild(row);
-            window.location.reload();
-        } else if (response.status == 400){
-            message("This department is not empty. First you must detach the professor.");
+            //window.location.reload();
+        } else if (response.status == 500){
+            alert("This department is not empty. First you must detach the professor.");
+        } else {
+            alert("Department not found.");
         }
     }
 }
@@ -148,14 +154,21 @@ function createTableRow({id,name}){
     const actionsColumn = document.createElement('td');
     const btnEdit = document.createElement('button');
     const btnDelete = document.createElement('button');
+    const iEditElement = document.createElement('i');
+    const iDeleteElement = document.createElement('i');
 
-    btnDelete.setAttribute('class','btnDelete btn btn-danger btn-floating bi bi-trash');
+    btnDelete.setAttribute('class','btnDelete btn btn-danger btn-floating me-2');
     btnDelete.setAttribute('title','Delete Department #'+id);
     btnDelete.addEventListener("click", () => deleteRow(id,name,row));
-    btnEdit.setAttribute('class','btnEdit btn btn-success btn-floating bi bi-pencil-fill');
+    iDeleteElement.setAttribute('class','fa-solid fa-trash');
+    btnDelete.appendChild(iDeleteElement);
+
+    btnEdit.setAttribute('class','btnEdit btn btn-success btn-floating me-2');
+    iEditElement.setAttribute('class','fa-regular fa-pen-to-square');
     btnEdit.setAttribute('data-bs-toggle','modal');
     btnEdit.setAttribute('data-bs-target','#editDepartmentModal');
     btnEdit.setAttribute('title','Edit Department #'+id);
+    btnEdit.appendChild(iEditElement);
     btnEdit.addEventListener('click', () => editRow(id,name));
 
     idColumn.textContent = id;
@@ -174,5 +187,7 @@ function createTableRow({id,name}){
     tableBody.appendChild(row);
 }
 
-
-getDepartments();
+$(document).ready(function(){
+    inputNewDepartment.textContent="";
+    getDepartments();
+});

@@ -7,6 +7,7 @@ const divDeleteAllRows = document.getElementById("deleteAllRows");
 let courseName = "";
 
 btnAddCourse.addEventListener('click',()=>addNewCourse());
+btnAddCourse.addEventListener("submit", (event) => {event.preventDefault();})
 
 async function getCourses(){
     const response = await fetch(coursesURL);
@@ -23,8 +24,11 @@ async function getCourses(){
             const btnDelete = document.createElement('button');
             const spanDelete = document.createElement('span');
             const hrLine = document.createElement('hr');
-            btnDelete.setAttribute('class','btnDeleteAll btn btn-danger btn-floating bi bi-trash-fill');
+            const iDelete = document.createElement('i');
+            btnDelete.setAttribute('class','btnDeleteAll btn btn-danger btn-floating');
             btnDelete.setAttribute('title','Delete All Courses');
+            iDelete.setAttribute('class','fa-solid fa-trash-can');
+            btnDelete.appendChild(iDelete);
             spanDelete.setAttribute('class','px-3 py-2');
             spanDelete.textContent = 'Delete All Courses:';
             btnDelete.addEventListener("click", () => deleteAllRows());
@@ -141,14 +145,20 @@ function createTableRow({id,name}){
     const actionsColumn = document.createElement('td');
     const btnEdit = document.createElement('button');
     const btnDelete = document.createElement('button');
+    const iEditElement = document.createElement('i');
+    const iDeleteElement = document.createElement('i');
 
-    btnDelete.setAttribute('class','btnDelete btn btn-danger btn-floating bi bi-trash');
+    btnDelete.setAttribute('class','btnDelete btn btn-danger btn-floating me-2');
     btnDelete.setAttribute('title','Delete Course #'+id);
+    iDeleteElement.setAttribute('class','fa-solid fa-trash');
+    btnDelete.appendChild(iDeleteElement);
     btnDelete.addEventListener("click", () => deleteRow(id,name,row));
-    btnEdit.setAttribute('class','btnEdit btn btn-success btn-floating bi bi-pencil-fill');
+    btnEdit.setAttribute('class','btnEdit btn btn-success btn-floating me-2');
     btnEdit.setAttribute('data-bs-toggle','modal');
     btnEdit.setAttribute('data-bs-target','#editCourseModal');
     btnEdit.setAttribute('title','Edit Course #'+id);
+    iEditElement.setAttribute('class','fa-regular fa-pen-to-square');
+    btnEdit.appendChild(iEditElement);
     btnEdit.addEventListener('click', () => editRow(id,name));
 
     idColumn.textContent = id;
@@ -168,4 +178,7 @@ function createTableRow({id,name}){
 }
 
 
-getCourses();
+$(document).ready(function(){
+    inputNewCourse.textContent="";
+    getCourses();
+});
