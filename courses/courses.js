@@ -7,7 +7,7 @@ const divDeleteAllRows = document.getElementById("deleteAllRows");
 let courseName = "";
 
 btnAddCourse.addEventListener('click',()=>addNewCourse());
-btnAddCourse.addEventListener("submit", (event) => {event.preventDefault();})
+//btnAddCourse.addEventListener("submit", (event) => {event.preventDefault();})
 
 async function getCourses(){
     const response = await fetch(coursesURL);
